@@ -2,14 +2,11 @@
 #include "GyverOLED.h"
 GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> oled;
 
-#define soilPin A0
-
 float temp_delta=0;
 float hum_delta=0;
 float h=0;
 float t=0;
 int it=0;
-int soil;
 
 #define DHTPIN 2 
 DHT dht(DHTPIN, DHT11);
@@ -41,7 +38,6 @@ void loop()
 }
 void measure()
 {
-  soil=analogRead(soilPin);
   h = dht.readHumidity();
   t = dht.readTemperature();
   if (isnan(h) || isnan(t)) {
@@ -59,11 +55,9 @@ void output()
 
   oled.setCursorXY(0, 20);
   oled.print(t);
-  oled.print("  ");
+  oled.print("   ");
   oled.print(h);
   oled.print("%");
-  oled.print("  ");
-  oled.print(soil);
   oled.circle(33,22,1,OLED_FILL);
 
 
