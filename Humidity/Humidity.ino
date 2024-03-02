@@ -22,20 +22,18 @@ void setup()
 
 void loop() 
 {
-  if (it<10)
-  {
-  delay(1000);
-  measure();
-  float_check();
-  output();
-  } else
-  {
-    delay(10000);
-  measure();
-  float_check();
-  output();
-  }
+  delay((it < 10) ? 1000 : 10000)
+  call();
+  
 }
+
+void call()
+{
+  measure();
+  float_check();
+  output();
+}
+
 void measure()
 {
   h = dht.readHumidity();
