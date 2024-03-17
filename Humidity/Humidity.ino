@@ -1,28 +1,30 @@
-#include "DHT.h"
 #include "GyverOLED.h"
+#include <GyverBME280.h>
 GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> oled;
+GyverBME280 bme; 
 
 float temp_delta=0;
 float hum_delta=0;
 float h=0;
 float t=0;
+float p=0;
+float  pressure_delta=0;
 int it=0;
 
 #define DHTPIN 2 
-DHT dht(DHTPIN, DHT11);
 void setup() 
 {
   Serial.begin(9600);
-  dht.begin();
   oled.init();
   oled.home();
   Wire.setClock(400000L);
 
+if (!bme.begin(0x76)) Serial.println("Error!");
 }
 
 void loop() 
 {
-  delay((it < 10) ? 1000 : 10000)
+  delay((it < 10) ? 1000 : 10000);
   call();
   
 }
@@ -36,8 +38,9 @@ void call()
 
 void measure()
 {
-  h = dht.readHumidity();
-  t = dht.readTemperature();
+  h = bme.readHumidity();
+  t = bme.readTemperature();
+  p = bme.readPressure();
   if (isnan(h) || isnan(t)) {
      oled.setCursorXY(20, 0);
   oled.print("Error");
@@ -51,12 +54,10 @@ void output()
   oled.setScale(1);
   oled.circle(90,3,3,OLED_FILL);
 
+  oled.setScale(2);
   oled.setCursorXY(0, 20);
-  oled.print(t);
-  oled.print("   ");
-  oled.print(h);
-  oled.print("%");
-  oled.circle(33,22,1,OLED_FILL);
+  oled.print("p:");
+  oled.print(pressure_delta/it);
 
 
   oled.setScale(2);
@@ -80,6 +81,7 @@ void float_check()
   }
   else
   {
+  pressure_delta+=p;
   temp_delta+=t;
   hum_delta+=h;
   it++;
